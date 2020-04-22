@@ -5,6 +5,9 @@ const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
+const fs = require('fs');
+const Promise = require('bluebird');
+const formidable = require('formidable');
 
 const flatJSON = require('./createCSV');
 
@@ -20,7 +23,22 @@ app.use(bodyParser.urlencoded());
 
 app.use(express.static(path.join(__dirname + '/client')));
 
+// Direct post requests from form submission to CSV compiler and send results back to client
+
+// fs.readFile
+// path.join
+
+const readFileAsync = Promise.promisify(fs.readFile);
+
 app.post('/', (req, res) => {
+
+  // return readFileAsync()
+  console.log("Logging request body => ", req.body);
+
+  return readFileAsync(req.body.json)
+  .then(results => {
+    console.log('Did readFile work? => ', results);
+  });
 
   return flatJSON.getCSV(JSON.parse(req.body.json))
   .then((csv) => {
@@ -34,8 +52,18 @@ app.post('/', (req, res) => {
 
 });
 
-app.get('/', (req, res) => {
-  console.log('We made it!');
+
+app.post('/upload', (req, res) => {
+  var form = formidable();
+  form.parse(req, (err, fields, file) => {
+    if (err) {
+      res.sendStatus(404);
+    }
+    res.write('File uploaded!');
+    res.end();
+  })
+
+
 });
 
 
