@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel . --out-dir compiled --presets=react --ignore=node_modules,compiled --source-maps inline -w"
+    "start": "babel . --out-dir compiled --presets=react --ignore=node_modules,compiled --source-maps inline -w",
+    "serve": "nodemon ./server.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "express": "^4.17.1",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.3",
+    "path": "^0.12.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
