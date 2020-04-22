@@ -32,14 +32,6 @@ const readFileAsync = Promise.promisify(fs.readFile);
 
 app.post('/', (req, res) => {
 
-  // return readFileAsync()
-  console.log("Logging request body => ", req.body);
-
-  return readFileAsync(req.body.json)
-  .then(results => {
-    console.log('Did readFile work? => ', results);
-  });
-
   return flatJSON.getCSV(JSON.parse(req.body.json))
   .then((csv) => {
     var csvHTML = compiler.compiled({ csv });
