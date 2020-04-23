@@ -5,14 +5,14 @@ const port = 4568;
 const parser = require('body-parser');
 const morgan = require('morgan');
 const path = require('path');
-
+const cors = require('cors');
 const mysql = require('mysql');
 
 app.listen(port, () => {console.log(`Server is listening on port ${port}`)});
 
 app.use(parser.json());
 app.use(parser.urlencoded());
-
+app.use(cors());
 app.use(express.static('public'));
 
 // Establish connection with database using mysql.createConnection
@@ -28,14 +28,16 @@ db.connect();
 
 // Define model functions for interactions with DB
 const postUsers = (userInfo, callback) => {
-  let queryString = 'INSERT INTO users VALUES(0, ?, ?, ?)';
-  let queryArgs = [];
+  let queryString = 'INSERT INTO users VALUES(0, ?, ?, ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)';
+  let queryArgs = [userInfo.name, userInfo.email, userInfo.password];
 
   db.query(queryString, queryArgs, (err, results) => {
     if (err) {
+      console.log('Logging error from insert => ', err);
       callback(err);
     }
     console.log('Query inserted successfully, gave back these results => ', results);
+    callback(results);
   });
 
 };
@@ -45,7 +47,14 @@ const postUsers = (userInfo, callback) => {
 
 // Set up routes to appropriate functions
 app.post('/users', (req, res) => {
-  console.log('Logging request from client => ', req.body);
+  var userInput = JSON.parse(req.body.json);
+  console.log('Logging userInput obj => ', userInput);
+  postUsers(userInput, (err, results) => {
+    if (err) {
+      res.sendStatus(404);
+    }
+    res.send(results);
+  });
 
 });
 
