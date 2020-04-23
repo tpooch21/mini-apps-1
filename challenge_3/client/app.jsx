@@ -22,7 +22,6 @@ const postData = (options, endpoint, successCB, errorCB = null) => {
 };
 
 
-
 // User contact info form
 const UserSignup = (props) => (
 
@@ -80,11 +79,22 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      page: 'home'
+      page: 'home',
+      id:
     };
 
     this.onSubmit = this.onSubmit.bind(this);
   }
+
+  // Submits ajax request to server, and updates state with most recent mySQL insertion ID
+  postToServer(options, endpoint) {
+
+    this.props.postData(options, endpoint, (results) => {
+      console.log('Logging results upon successful insertion => ', results);
+    });
+
+  }
+
 
 
   // Determine what page to send the user to next based on the current page
@@ -109,23 +119,13 @@ class App extends React.Component {
         nextPage = 'home';
       }
 
-      console.log('Logging form elements => ', form.elements);
-
-      // let dataToPost = {};
-      // form.elements.forEach(input => {
-      //   dataToPost[input.name] = formData.get(input.name);
-      // });
-
       let dataToPost = {};
       for (var pair of formData.entries()) {
         dataToPost[pair[0]] = pair[1];
       };
 
-      console.log('Did I do it? => ', dataToPost);
-
-      postData(dataToPost, endpoint, () => {
-        console.log('AY!');
-      });
+      // Send data to postToServer ajax handler, which will post to server, and update the state with the most recent insert id
+      this.props.postToServer(dataToPost, endpoint);
 
     } else {
       nextPage = 'F1';
@@ -170,7 +170,7 @@ class App extends React.Component {
 };
 
 ReactDOM.render(
-  <App />,
+  <App postData={postData}/>,
   document.getElementById('app')
 );
 
