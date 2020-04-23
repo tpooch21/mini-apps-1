@@ -8,20 +8,37 @@
 //  3. Form 2 - Address (line 1, line 2, city, state, zip) and phone # - next button
 //  4. Form 3 - Credit card #, expiry date, CVV, billing zip - purchase button
 
+// Set up ajax request function, which will be passed to App as a prop and used in the body of app
+const postData = (options, endpoint, successCB, errorCB = null) => {
+  $.ajax({
+    method: 'post',
+    data: {json: JSON.stringify(options)},
+    url: `http://localhost:4568/${endpoint}`,
+    success: successCB,
+    error: () => {
+      console.log('Error posting data');
+    }
+  });
+};
+
+
+
+// User contact info form
 const UserSignup = (props) => (
 
-  <form id="signup-form" method="post" action="http://localhost:4568/users">
+  <form id="signup-form" method="post" action="http://localhost:4568/users" onSubmit={props.onChange}>
     <label for="user">Name: </label><br></br>
     <input type="text" name="name" id="user-name"/><br></br>
     <label for="email">Email Address: </label><br></br>
     <input type="text" name="email" id="user-email"/><br></br>
     <label for="user">Password: </label><br></br>
-    <input type="text" name="password" id="user-password"/><br></br>
-    <input type="submit" value="Next" onClick={(e) => {props.onClick(e)}}/>
+    <input type="text" name="password" id="user-password" /><br></br>
+    <input type="submit" value="Next"/>
   </form>
 
 );
 
+// User Address info form
 const UserAddress = (props) => (
 
   <form id="address-form" method="post" action="http://localhost:4568/addresses">
@@ -40,6 +57,7 @@ const UserAddress = (props) => (
 
 );
 
+// User credit card info form
 const UserCard = (props) => (
 
   <form id="card-form" method="post" action="http://localhost:4568/cards">
@@ -56,8 +74,7 @@ const UserCard = (props) => (
 
 );
 
-
-
+// Stateful class component that renders form based on state
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -69,27 +86,54 @@ class App extends React.Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+
   // Determine what page to send the user to next based on the current page
   onSubmit(event) {
-    // event.preventDefault();
-    console.log('In here');
 
+    event.preventDefault();
     let nextPage;
 
-    if (this.state.page === 'home') {
-      nextPage = 'F1';
-    } else if (this.state.page === 'F1') {
-      nextPage = 'F2';
-    } else if (this.state.page === 'F2') {
-      nextPage = 'F3';
+    if (this.state.page !== 'home') {
+      // Create formData object
+      const form = event.target;
+      let formData = new FormData(event.target);
+      let endpoint;
+      if (this.state.page === 'F1') {
+        endpoint = 'users';
+        nextPage = 'F2';
+      } else if (this.state.page === 'F2') {
+        endpoint = 'addresses';
+        nextPage = 'F3';
+      } else {
+        endpoint = 'cards';
+        nextPage = 'home';
+      }
+
+      console.log('Logging form elements => ', form.elements);
+
+      // let dataToPost = {};
+      // form.elements.forEach(input => {
+      //   dataToPost[input.name] = formData.get(input.name);
+      // });
+
+      let dataToPost = {};
+      for (var pair of formData.entries()) {
+        dataToPost[pair[0]] = pair[1];
+      };
+
+      console.log('Did I do it? => ', dataToPost);
+
+      postData(dataToPost, endpoint, () => {
+        console.log('AY!');
+      });
+
     } else {
-      nextPage = 'home';
+      nextPage = 'F1';
     }
 
     this.setState({
       page: nextPage
     });
-
   }
 
   render() {
@@ -104,19 +148,19 @@ class App extends React.Component {
     } else if (this.state.page === 'F1') {
       return(
         <div id="user-signup">
-          <UserSignup onClick={this.onSubmit} />
+          <UserSignup onChange={this.onSubmit} />
         </div>
       );
     } else if (this.state.page === 'F2') {
       return(
         <div id="user-address">
-          <UserAddress onClick={this.onSubmit} />
+          <UserAddress onChange={this.onSubmit} />
         </div>
       );
     } else {
       return(
         <div id="user-card">
-          <UserCard onClick={this.onSubmit} />
+          <UserCard onChange={this.onSubmit} />
         </div>
       );
     }
@@ -129,6 +173,10 @@ ReactDOM.render(
   <App />,
   document.getElementById('app')
 );
+
+//
+
+
 
 
 
