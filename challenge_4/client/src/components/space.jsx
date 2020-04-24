@@ -2,11 +2,11 @@ import React from 'react';
 
 var Space = (props) => {
   let col = props.y;
-
-  // CHeck if this space should be filled by looking up the highest filled row in this space's column, and checking if this space is in a lower row
-  if (props.x >= props.state[col]) {
+  let row = props.x
+  // Check if this space's row is included in the object of filled spaces for this space's column, and render it with the appropriate column
+  if (props.state[col][row]) {
     return (
-      <div className="space filled"></div>
+      <div className={`space ${props.state[col][row]}`}></div>
     );
   }
 

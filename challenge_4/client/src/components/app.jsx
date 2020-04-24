@@ -26,15 +26,17 @@ class App extends React.Component {
     super(props);
 
     // Additions to be made
+    // Make values objects, with rows as keys, and colors in those rows as objects
+    // In space.jsx, we can perform lookups on the columns, and on the rows to determine what color to render
     this.state = {
       playerTurn: 'red',
-      0: 6,
-      1: 6,
-      2: 6,
-      3: 6,
-      4: 6,
-      5: 6,
-      6: 6
+      0: {},
+      1: {},
+      2: {},
+      3: {},
+      4: {},
+      5: {},
+      6: {}
     };
 
     // Maintain a copy of state
@@ -49,7 +51,16 @@ class App extends React.Component {
   // For example state = { cols: {0: 1}} --> says column 0 has a piece in row 0, which means next open spot is row 1
   onPlayerMove(col) {
 
-    this.copyOfState[col]--;
+    debugger;
+    // If object (meaning column) is empty, add piece in the bottom row
+    if (Object.keys(this.copyOfState[col]).length === 0) {
+      this.copyOfState[col][5] = this.state.playerTurn;
+      this.copyOfState[col].mostRecent = 5;
+    } else {
+      let nextSpace = this.copyOfState[col].mostRecent - 1;
+      this.copyOfState[col][nextSpace] = this.state.playerTurn;
+      this.copyOfState[col].mostRecent = nextSpace;
+    }
 
 
     this.setState({
