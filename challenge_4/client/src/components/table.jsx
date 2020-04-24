@@ -1,13 +1,14 @@
 import React from 'react';
+import Row from './row.jsx';
 
 var Table = (props) => (
   <div className="table">
-    <Row num={0}/><br></br>
-    <Row num={1}/><br></br>
-    <Row num={2}/><br></br>
-    <Row num={3}/><br></br>
-    <Row num={4}/><br></br>
-    <Row num={5}/><br></br>
+    <Row click={props.event} state={props.state} num={0}/>
+    <Row click={props.event} state={props.state} num={1}/>
+    <Row click={props.event} state={props.state} num={2}/>
+    <Row click={props.event} state={props.state} num={3}/>
+    <Row click={props.event} state={props.state} num={4}/>
+    <Row click={props.event} state={props.state} num={5}/>
   </div>
 );
 
